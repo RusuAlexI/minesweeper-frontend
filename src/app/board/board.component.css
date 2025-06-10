@@ -1,0 +1,28 @@
+.board {
+  display: grid;
+  grid-template-rows: auto;
+  gap: 2px;
+}
+
+.row {
+  display: flex;
+}
+
+.cell {
+  width: 30px;
+  height: 30px;
+  background-color: #ccc;
+  border: 1px solid #999;
+  text-align: center;
+  line-height: 30px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.cell.revealed {
+  background-color: #eee;
+}
+
+.cell.mine {
+  color: red;
+}

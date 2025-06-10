@@ -1,0 +1,8 @@
+<div *ngIf="game">
+  <div *ngFor="let row of game.board; let i = index" class="row">
+    <button *ngFor="let cell of row; let j = index"
+            (click)="handleClick(i, j)">
+      {{ cell.isRevealed ? (cell.adjacentMines || '💣') : '' }}
+    </button>
+  </div>
+</div>
