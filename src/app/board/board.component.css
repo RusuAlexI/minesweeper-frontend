@@ -1,28 +1,35 @@
-.board {
-  display: grid;
-  grid-template-rows: auto;
-  gap: 2px;
-}
+/* app.component.css (or board.component.css depending on where the grid is rendered) */
 
 .row {
-  display: flex;
+  display: flex; /* Use flexbox for rows */
 }
 
-.cell {
-  width: 30px;
-  height: 30px;
-  background-color: #ccc;
-  border: 1px solid #999;
-  text-align: center;
-  line-height: 30px;
-  font-size: 18px;
+.row button {
+  width: 30px;   /* Set a fixed width for each cell */
+  height: 30px;  /* Set a fixed height for each cell */
+  border: 1px solid #ccc; /* Add a border for visibility */
+  background-color: #eee; /* Light background for unrevealed */
+  font-size: 16px; /* Adjust font size for content */
+  font-weight: bold;
+  display: flex; /* Center content within the button */
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
 }
 
-.cell.revealed {
-  background-color: #eee;
+/* Styles for revealed cells */
+.row button.revealed {
+  background-color: #ddd;
+  border: 1px solid #999;
+  cursor: default;
 }
 
-.cell.mine {
-  color: red;
+/* Optional: Style for bombs or numbers */
+.row button.mine {
+  background-color: #f00; /* Red for mines */
+  color: white;
+}
+
+.row button.number {
+  color: blue; /* Blue for numbers */
 }

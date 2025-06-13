@@ -12,7 +12,8 @@ export interface GameBoard {
   rows: number;
   cols: number;
   mines: number;
-  status: 'IN_PROGRESS' | 'COMPLETED' | 'GAME_OVER'; // Example statuses
+  // Make sure this matches your Java enum values!
+  status: 'IN_PROGRESS' | 'WON' | 'LOST'; // <--- Corrected this line
   startTime: number;
   board: GameCell[][]; // <--- CRUCIAL: Ensure this is typed as GameCell[][]
 }
