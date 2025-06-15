@@ -17,7 +17,8 @@ import { GameService } from './services/game.service'; // Import your new servic
     <app-board *ngIf="game"
                [game]="game"
                (cellClicked)="handleClick($event.row, $event.col)"
-               (cellFlagged)="handleRightClick($event.row, $event.col)"> </app-board>
+               (cellFlagged)="handleRightClick($event.row, $event.col)"
+               (cellChordClicked)="handleChordClick($event.row, $event.col)">  </app-board>
   `,
   styleUrls: ['./app.component.css']
 })
@@ -57,7 +58,7 @@ export class AppComponent implements OnInit { // Implement OnInit
     });
   }
 
-  handleRightClick(row: number, col: number): void { // <--- Remove the 'event: MouseEvent' parameter
+  handleRightClick(row: number, col: number): void { // <--- KEEP IT WITHOUT MouseEvent here
     console.log('AppComponent: Received right-click event for cell', row, col);
     if (!this.game || this.game.status !== 'IN_PROGRESS' || this.game.board[row][col].isRevealed) {
       console.log('AppComponent: Right-click ignored due to game state or cell state.');
@@ -72,4 +73,23 @@ export class AppComponent implements OnInit { // Implement OnInit
       error: (err) => { console.error('AppComponent: Error flagging cell:', err); }
     });
   }
+
+  handleChordClick(row: number, col: number): void {
+    console.log('APP_COMPONENT: Received chord click event for cell', row, col);
+    if (!this.game || this.game.status !== 'IN_PROGRESS' || !this.game.board[row][col].isRevealed) {
+      console.log('APP_COMPONENT: Chord click ignored due to game state or cell not revealed.');
+      return;
+    }
+
+    this.gameService.chordClick(this.game.id, row, col).subscribe({ // <--- NEW Service Call
+      next: (data) => {
+        this.game = data;
+        console.log('APP_COMPONENT: Chord click successful, new game state:', this.game);
+      },
+      error: (err) => {
+        console.error('APP_COMPONENT: Error during chord click:', err);
+      }
+    });
+  }
+
 }

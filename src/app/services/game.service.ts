@@ -34,4 +34,9 @@ export class GameService {
     return this.http.post<GameBoard>(`${this.apiUrl}/start`, { rows, cols, mines });
   }
 
+  chordClick(gameId: string, row: number, col: number): Observable<GameBoard> {
+    return this.http.put<GameBoard>(`${this.apiUrl}/${gameId}/chord`, { row, col }); // <--- Corrected template literal
+  }
+
+
 }

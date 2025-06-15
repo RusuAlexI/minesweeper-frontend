@@ -1,9 +1,7 @@
 <div *ngIf="game && game.board" class="game-board-container">
   <div *ngFor="let row of game.board; let i = index" class="row">
     <button *ngFor="let cell of row; let j = index"
-            (click)="onCellClick(i, j)"
-            (contextmenu)="onCellRightClick($event, i, j)"
-            [class.revealed]="cell.isRevealed"
+            (click)="onCellClick(i, j)"         (contextmenu)="onCellRightClick($event, i, j)" (mousedown)="onMouseDown($event, i, j)"   (mouseup)="onMouseUp($event, i, j)"     [class.revealed]="cell.isRevealed"
             [class.flagged]="cell.isFlagged"
             [class.mine]="cell.isRevealed && cell.isMine">
       <ng-container *ngIf="cell.isRevealed">
@@ -16,3 +14,5 @@
     </button>
   </div>
 </div>
+<h2 *ngIf="game?.status === 'WON'">🥳 You Won!</h2>
+<h2 *ngIf="game?.status === 'LOST'">💥 Game Over!</h2>
