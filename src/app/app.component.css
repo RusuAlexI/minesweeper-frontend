@@ -33,3 +33,198 @@
 .row button.number {
   color: blue; /* Blue for numbers */
 }
+
+.difficulty-selection {
+  margin-bottom: 15px;
+}
+
+.difficulty-selection button {
+  padding: 8px 15px;
+  margin-right: 10px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+}
+
+.difficulty-selection button.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.game-info {
+  margin-top: 10px;
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+.name-input-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it's on top */
+}
+
+.name-input-card {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+.name-input-card h3 {
+  margin-top: 0;
+  color: #28a745; /* Green for win */
+}
+
+.name-input-card label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.name-input-card input[type="text"] {
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+}
+
+.name-input-card button {
+  padding: 10px 20px;
+  margin: 0 10px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.name-input-card button:first-of-type {
+  background-color: #007bff;
+  color: white;
+}
+
+.name-input-card button:last-of-type {
+  background-color: #dc3545; /* Red for cancel */
+  color: white;
+}
+
+.high-scores-container {
+  margin-top: 30px;
+  padding: 20px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.high-scores-container h2 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.high-scores-container button {
+  padding: 8px 15px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  border: 1px solid #007bff;
+  background-color: #007bff;
+  color: white;
+  border-radius: 4px;
+}
+
+.high-scores-container ul {
+  list-style: none;
+  padding: 0;
+}
+
+.high-scores-container li {
+  background-color: #e9e9e9;
+  margin-bottom: 8px;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 1.1em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px; /* Space between rank, name, time */
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+}
+
+/* Optional: improve game board sizing for different difficulties */
+.game-board-container {
+  display: inline-block; /* Helps with centering */
+  margin: 20px auto;
+  /* Add max-width and overflow-x for larger boards if they go off screen */
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.row {
+  display: flex;
+}
+
+button {
+  width: 30px; /* Adjust as needed */
+  height: 30px; /* Adjust as needed */
+  border: 1px solid #bbb;
+  background-color: #ccc;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: bold;
+  display: flex; /* For centering content inside button */
+  justify-content: center;
+  align-items: center;
+  padding: 0; /* Remove default padding */
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
+  user-select: none; /* Prevent text selection on quick clicks */
+}
+
+button:hover {
+  background-color: #ddd;
+}
+
+button.revealed {
+  background-color: #eee;
+  cursor: default;
+}
+
+button.revealed:hover {
+  background-color: #eee;
+}
+
+button.revealed span {
+  color: blue; /* Default for numbers */
+}
+
+/* Specific colors for numbers */
+button.revealed span:nth-child(1) { color: blue; }    /* 1 */
+button.revealed span:nth-child(2) { color: green; }   /* 2 */
+button.revealed span:nth-child(3) { color: red; }     /* 3 */
+button.revealed span:nth-child(4) { color: navy; }    /* 4 */
+button.revealed span:nth-child(5) { color: brown; }   /* 5 */
+button.revealed span:nth-child(6) { color: teal; }    /* 6 */
+button.revealed span:nth-child(7) { color: black; }   /* 7 */
+button.revealed span:nth-child(8) { color: grey; }    /* 8 */
+
+
+button.flagged {
+  background-color: #ffcc00; /* Yellow for flag */
+}
+
+button.mine {
+  background-color: #ff0000; /* Red for mine */
+}

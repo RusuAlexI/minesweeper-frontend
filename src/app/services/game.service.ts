@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { GameBoard } from '../models/game';
+import { Difficulty } from '../models/difficulty'; // Import the new enum
+
 
 @Injectable({
   providedIn: 'root'
@@ -28,10 +30,10 @@ export class GameService {
     return this.http.get<GameBoard>(`${this.apiUrl}/${id}`);
   }
 
-  // Method to start a new game
-  startGame(rows: number, cols: number, mines: number): Observable<GameBoard> {
-    // Assuming your backend has an endpoint like POST /api/game/start
-    return this.http.post<GameBoard>(`${this.apiUrl}/start`, { rows, cols, mines });
+  // Modified startGame to accept Difficulty
+  startGame(difficulty: Difficulty): Observable<GameBoard> {
+    // Send the difficulty enum value in the request body
+    return this.http.post<GameBoard>(`${this.apiUrl}/start`, { difficulty });
   }
 
   chordClick(gameId: string, row: number, col: number): Observable<GameBoard> {
