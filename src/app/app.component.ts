@@ -1,14 +1,14 @@
-import { Component, OnInit, OnDestroy } from '@angular/core'; // Added OnDestroy
-import { GameBoard } from './models/game';
-import { BoardComponent } from './board/board.component';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { GameBoard } from './models/game-board'; // IMPORTANT: Use game-board.ts
+import { BoardComponent } from './board/board.component'; // Assuming you have this
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { GameService } from './services/game.service';
-import { Difficulty } from './models/difficulty'; // Import the new Difficulty enum
-import { ScoreService } from './services/score.service'; // NEW: Import ScoreService
-import { Score } from './models/score'; // NEW: Import Score interface
-import { FormsModule } from '@angular/forms'; // NEW: For ngModel binding on input
-
+import { Difficulty } from './models/difficulty';
+import { GameCreationRequest } from './models/game-creation-request'; // Import new request model
+import { ScoreService } from './services/score.service';
+import { Score } from './models/score';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -17,141 +17,238 @@ import { FormsModule } from '@angular/forms'; // NEW: For ngModel binding on inp
     BoardComponent,
     CommonModule,
     HttpClientModule,
-    FormsModule // NEW: Add FormsModule for two-way binding
+    FormsModule
   ],
   template: `
-    <h1>Minesweeper</h1>
-    <div class="difficulty-selection">
-      <button (click)="selectDifficulty(Difficulty.EASY)" [class.active]="selectedDifficulty === Difficulty.EASY">Easy</button>
-      <button (click)="selectDifficulty(Difficulty.MEDIUM)" [class.active]="selectedDifficulty === Difficulty.MEDIUM">Medium</button>
-      <button (click)="selectDifficulty(Difficulty.HARD)" [class.active]="selectedDifficulty === Difficulty.HARD">Hard</button>
-    </div>
-    <button (click)="startNewGame()">New Game</button>
-    <div class="game-info">
-      <p *ngIf="game">Difficulty: {{ game.difficulty }}</p>
-      <p *ngIf="game?.status === 'IN_PROGRESS'">Time: {{ formatTime(elapsedTime) }}</p>
-      <p *ngIf="game?.status === 'WON'">You Won in: {{ formatTime(game!.timeTaken!) }}!</p>
-      <p *ngIf="game?.status === 'LOST'">Game Over!</p>
-    </div>
+    <div class="minesweeper-container">
+      <h1>Minesweeper</h1>
 
-    <app-board *ngIf="game"
-               [game]="game"
-               (cellClicked)="handleClick($event.row, $event.col)"
-               (cellFlagged)="handleRightClick($event.row, $event.col)"
-               (cellChordClicked)="handleChordClick($event.row, $event.col)">
-    </app-board>
+      <div class="game-setup">
+        <h2>Game Setup</h2>
+        <div class="game-mode-selection">
+          <label>
+            <input type="radio" name="gameMode" value="predefined" [(ngModel)]="gameMode" (change)="setGameMode('predefined')"> Predefined
+          </label>
+          <label>
+            <input type="radio" name="gameMode" value="custom" [(ngModel)]="gameMode" (change)="setGameMode('custom')"> Custom
+          </label>
+        </div>
 
-    <div *ngIf="showNameInput" class="name-input-overlay">
-      <div class="name-input-card">
-        <h3>Congratulations! You Won!</h3>
-        <p>Your time: {{ formatTime(game!.timeTaken!) }}</p>
-        <label for="playerName">Enter your name:</label>
-        <input id="playerName" type="text" [(ngModel)]="playerNameInput" maxlength="20" placeholder="Anonymous">
-        <button (click)="submitScore()">Save Score</button>
-        <button (click)="cancelScoreInput()">No Thanks</button>
+        <div *ngIf="gameMode === 'predefined'" class="predefined-settings">
+          <label for="difficulty-select">Select Difficulty:</label>
+          <select id="difficulty-select" [(ngModel)]="selectedDifficulty">
+            <option [ngValue]="DifficultyEnum.EASY">Easy</option>
+            <option [ngValue]="DifficultyEnum.MEDIUM">Medium</option>
+            <option [ngValue]="DifficultyEnum.HARD">Hard</option>
+          </select>
+        </div>
+
+        <div *ngIf="gameMode === 'custom'" class="custom-settings">
+          <h3>Custom Board Settings</h3>
+          <div class="input-group">
+            <label for="customRows">Rows:</label>
+            <input type="number" id="customRows" [(ngModel)]="customRows" min="5" max="50">
+          </div>
+          <div class="input-group">
+            <label for="customCols">Columns:</label>
+            <input type="number" id="customCols" [(ngModel)]="customCols" min="5" max="50">
+          </div>
+          <div class="input-group">
+            <label for="customMines">Mines:</label>
+            <input type="number" id="customMines" [(ngModel)]="customMines" min="1">
+          </div>
+          <p *ngIf="customSettingsError" class="error-message">{{ customSettingsError }}</p>
+        </div>
+
+        <button (click)="startNewGame()">Start New Game</button>
       </div>
-    </div>
 
-    <div class="high-scores-container">
-      <h2>High Scores ({{ selectedDifficulty }})</h2>
-      <button (click)="refreshHighScores()">Refresh Scores</button>
-      <ul *ngIf="topScores.length > 0">
-        <li *ngFor="let score of topScores; let i = index">
-          {{ i + 1 }}. {{ score.playerName }} - {{ formatTime(score.timeTaken) }}
-        </li>
-      </ul>
-      <p *ngIf="topScores.length === 0">No scores yet for this difficulty.</p>
+      <div class="game-info">
+        <p *ngIf="game">Difficulty: {{ game.difficulty }}</p>
+        <p *ngIf="game?.status === 'IN_PROGRESS'">Time: {{ formatTime(elapsedTime) }}</p>
+        <p *ngIf="game?.status === 'WON'">You Won in: {{ formatTime(game!.timeTaken!) }}!</p>
+        <p *ngIf="game?.status === 'LOST'">Game Over!</p>
+      </div>
+
+      <app-board *ngIf="game"
+                 [game]="game"
+                 (cellClicked)="handleClick($event.row, $event.col)"
+                 (cellFlagged)="handleRightClick($event.row, $event.col)"
+                 (cellChordClicked)="handleChordClick($event.row, $event.col)">
+      </app-board>
+
+      <div *ngIf="showNameInput" class="name-input-overlay">
+        <div class="name-input-card">
+          <h3>Congratulations! You Won!</h3>
+          <p>Your time: {{ formatTime(game!.timeTaken!) }}</p>
+          <label for="playerName">Enter your name:</label>
+          <input id="playerName" type="text" [(ngModel)]="playerNameInput" maxlength="20" placeholder="Anonymous">
+          <button (click)="submitScore()">Save Score</button>
+          <button (click)="cancelScoreInput()">No Thanks</button>
+        </div>
+      </div>
+
+      <div class="high-scores-container">
+        <h2>High Scores</h2>
+        <div class="leaderboard-difficulty-select">
+          <label for="leaderboard-difficulty">Filter by Difficulty:</label>
+          <select id="leaderboard-difficulty" [(ngModel)]="selectedLeaderboardDifficulty" (change)="loadLeaderboard(selectedLeaderboardDifficulty)">
+            <option [ngValue]="DifficultyEnum.EASY">Easy</option>
+            <option [ngValue]="DifficultyEnum.MEDIUM">Medium</option>
+            <option [ngValue]="DifficultyEnum.HARD">Hard</option>
+            <option [ngValue]="DifficultyEnum.CUSTOM">Custom</option>
+          </select>
+        </div>
+        <ul *ngIf="topScores.length > 0">
+          <li *ngFor="let score of topScores; let i = index">
+            {{ i + 1 }}. {{ score.playerName }} - {{ formatTime(score.timeTaken) }} ({{ score.difficulty }})
+          </li>
+        </ul>
+        <p *ngIf="topScores.length === 0">No scores yet for this difficulty.</p>
+      </div>
     </div>
   `,
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, OnDestroy { // Implement OnDestroy
+export class AppComponent implements OnInit, OnDestroy {
 
   game: GameBoard | null = null;
-  selectedDifficulty: Difficulty = Difficulty.EASY; // Default difficulty
-  Difficulty = Difficulty; // Make enum available in template
+  selectedDifficulty: Difficulty = Difficulty.EASY;
+  DifficultyEnum = Difficulty; // Make enum available in template (renamed to avoid conflict with instance variable)
 
-  elapsedTime: number = 0; // For live timer display
-  private timerInterval: any; // To hold the interval reference
+  elapsedTime: number = 0;
+  private timerInterval: any;
 
-  // NEW: For score input
   showNameInput: boolean = false;
   playerNameInput: string = '';
-  topScores: Score[] = []; // To store fetched high scores
+  topScores: Score[] = [];
+  selectedLeaderboardDifficulty: Difficulty = Difficulty.EASY; // For leaderboard filter
 
-  constructor(private gameService: GameService, private scoreService: ScoreService) { } // Inject ScoreService
+  // New properties for Custom Game Settings
+  gameMode: 'predefined' | 'custom' = 'predefined';
+  customRows: number | null = null;
+  customCols: number | null = null;
+  customMines: number | null = null;
+  customSettingsError: string | null = null;
+
+  constructor(private gameService: GameService, private scoreService: ScoreService) { }
 
   ngOnInit(): void {
     this.startNewGame(); // Start default game on init
-    this.refreshHighScores(); // Load initial high scores
+    this.loadLeaderboard(this.selectedLeaderboardDifficulty); // Load initial high scores
   }
 
   ngOnDestroy(): void {
-    this.stopTimer(); // Clean up timer when component is destroyed
+    this.stopTimer();
   }
 
-  selectDifficulty(difficulty: Difficulty): void {
-    this.selectedDifficulty = difficulty;
-    console.log('Selected difficulty:', difficulty);
-    this.refreshHighScores(); // Refresh scores for new difficulty
+  setGameMode(mode: 'predefined' | 'custom'): void {
+    this.gameMode = mode;
+    this.customSettingsError = null; // Clear any previous errors
   }
 
   startNewGame(): void {
-    this.stopTimer(); // Stop any existing timer
-    this.elapsedTime = 0; // Reset timer
-    this.showNameInput = false; // Hide name input if visible
+    this.stopTimer();
+    this.elapsedTime = 0;
+    this.showNameInput = false;
+    this.customSettingsError = null; // Clear custom settings errors
 
-    this.gameService.startGame(this.selectedDifficulty).subscribe({
+    let request: GameCreationRequest;
+
+    if (this.gameMode === 'predefined') {
+      request = { difficulty: this.selectedDifficulty };
+    } else { // Custom mode
+      // Client-side validation for custom inputs
+      if (!this.customRows || !this.customCols || !this.customMines) {
+        this.customSettingsError = 'All custom dimensions (rows, cols, mines) are required.';
+        return;
+      }
+      if (this.customRows < 5 || this.customCols < 5 || this.customRows > 50 || this.customCols > 50) {
+        this.customSettingsError = 'Rows and columns must be between 5 and 50.';
+        return;
+      }
+      const totalCells = this.customRows * this.customCols;
+      if (this.customMines < 1 || this.customMines >= totalCells) {
+        this.customSettingsError = `Mines must be at least 1 and less than total cells (${totalCells}).`;
+        return;
+      }
+      if (this.customMines > totalCells / 2) {
+        this.customSettingsError = 'Too many mines for the given board size (maximum 50% of cells).';
+        return;
+      }
+
+      request = {
+        rows: this.customRows,
+        cols: this.customCols,
+        mines: this.customMines
+      };
+    }
+
+    this.gameService.createGame(request).subscribe({
       next: (data) => {
         this.game = data;
         console.log('AppComponent: New game started, game state:', this.game);
         if (this.game.status === 'IN_PROGRESS') {
-          this.startTimer(); // Start timer for new game
+          this.startTimer();
         }
       },
-      error: (err) => { console.error('AppComponent: Error starting game:', err); }
+      error: (err) => {
+        console.error('AppComponent: Error starting game:', err);
+        this.customSettingsError = `Failed to start game: ${err.error.message || 'Unknown error'}`; // Display backend error message
+      }
     });
   }
 
   handleClick(row: number, col: number): void {
-    if (!this.game || this.game.status !== 'IN_PROGRESS' || this.game.board[row][col].isRevealed || this.game.board[row][col].isFlagged) {
+    console.log('APP_COMPONENT: Board cell clicked event received:', event);
+
+    if (!this.game || !this.game.gameId) {
+      console.error('APP_COMPONENT: Cannot reveal cell, game is not active or has no ID.');
       return;
     }
 
-    this.gameService.revealCell(this.game.id, row, col).subscribe({
-      next: (data) => {
-        this.game = data;
-        console.log('AppComponent: Cell revealed, new game state:', this.game);
-        this.checkGameEnd(); // Check if game ended after this move
+    this.gameService.revealCell(this.game.gameId, row, col).subscribe({
+      next: (updatedGame) => {
+        console.log('APP_COMPONENT: Cell revealed successfully. Updated game:', updatedGame);
+        this.game = updatedGame; // Update the game state in app.component
+        // You might want to check game.status here to see if it changed to 'IN_PROGRESS', 'WON', or 'LOST'
+        if (this.game.status === 'WON') {
+          console.log('Game WON!');
+          this.showNameInput = true; // Show input to save score
+        } else if (this.game.status === 'LOST') {
+          console.log('Game LOST!');
+          // Potentially show game over message
+        }
       },
-      error: (err) => { console.error('AppComponent: Error revealing cell:', err); }
+      error: (err) => {
+        console.error('APP_COMPONENT: Error revealing cell:', err);
+        // Handle error, e.g., show an alert to the user
+      }
     });
   }
 
   handleRightClick(row: number, col: number): void {
-    if (!this.game || this.game.status !== 'IN_PROGRESS' || this.game.board[row][col].isRevealed) {
+    if (!this.game || this.game.status !== 'IN_PROGRESS' || this.game.board[row][col].revealed) {
       return;
     }
 
-    this.gameService.flagCell(this.game.id, row, col).subscribe({
+    this.gameService.flagCell(this.game.gameId, row, col).subscribe({
       next: (data) => {
         this.game = data;
-        console.log('AppComponent: Cell flagged/unflagged, new game state:', this.game);
       },
       error: (err) => { console.error('AppComponent: Error flagging cell:', err); }
     });
   }
 
   handleChordClick(row: number, col: number): void {
-    if (!this.game || this.game.status !== 'IN_PROGRESS' || !this.game.board[row][col].isRevealed) {
+    if (!this.game || this.game.status !== 'IN_PROGRESS' || !this.game.board[row][col].revealed) {
       return;
     }
 
-    this.gameService.chordClick(this.game.id, row, col).subscribe({
+    this.gameService.chordClick(this.game.gameId, row, col).subscribe({
       next: (data) => {
         this.game = data;
-        console.log('AppComponent: Chord click successful, new game state:', this.game);
-        this.checkGameEnd(); // Check if game ended after this move
+        this.checkGameEnd();
       },
       error: (err) => {
         console.error('AppComponent: Error during chord click:', err);
@@ -159,12 +256,11 @@ export class AppComponent implements OnInit, OnDestroy { // Implement OnDestroy
     });
   }
 
-  // --- Timer Logic ---
   private startTimer(): void {
     if (this.game && this.game.status === 'IN_PROGRESS') {
       this.timerInterval = setInterval(() => {
         this.elapsedTime = Date.now() - this.game!.startTime;
-      }, 1000); // Update every second
+      }, 1000);
     }
   }
 
@@ -175,38 +271,36 @@ export class AppComponent implements OnInit, OnDestroy { // Implement OnDestroy
     }
   }
 
-  // --- Game End / Score Logic ---
   private checkGameEnd(): void {
     if (this.game && this.game.status === 'WON') {
       this.stopTimer();
       console.log(`Game Won! Time Taken: ${this.game.timeTaken}ms`);
-      this.showNameInput = true; // Show the name input pop-up
+      this.showNameInput = true;
+      this.playerNameInput = ''; // Clear previous name input
     } else if (this.game && this.game.status === 'LOST') {
       this.stopTimer();
       console.log(`Game Over!`);
-      // Optionally, start a new game automatically or provide a button
     }
   }
 
   submitScore(): void {
-    if (!this.game || this.game.status !== 'WON' || !this.game.id) {
+    if (!this.game || this.game.status !== 'WON' || !this.game.gameId) {
       console.error('Cannot submit score: game not won or ID missing.');
       return;
     }
 
-    // Trim whitespace from name, default to 'Anonymous' if empty
     const playerName = this.playerNameInput.trim() || 'Anonymous';
 
-    this.scoreService.addScore(this.game.id, playerName).subscribe({
+    this.scoreService.addScore(this.game.gameId, playerName).subscribe({
       next: (response) => {
         console.log('Score submission response:', response);
-        this.showNameInput = false; // Hide input after submission
-        this.playerNameInput = ''; // Clear input
-        this.refreshHighScores(); // Refresh the list to see new score
+        this.showNameInput = false;
+        this.playerNameInput = '';
+        this.loadLeaderboard(this.game!.difficulty); // Load scores for the game's difficulty
       },
       error: (err) => {
         console.error('Error submitting score:', err);
-        this.showNameInput = false; // Hide even on error
+        this.showNameInput = false;
         this.playerNameInput = '';
       }
     });
@@ -217,20 +311,19 @@ export class AppComponent implements OnInit, OnDestroy { // Implement OnDestroy
     this.playerNameInput = '';
   }
 
-  refreshHighScores(): void {
-    this.scoreService.getTopScores(this.selectedDifficulty).subscribe({
+  loadLeaderboard(difficulty: Difficulty): void {
+    this.scoreService.getTopScores(difficulty).subscribe({
       next: (scores) => {
         this.topScores = scores;
-        console.log(`High scores for ${this.selectedDifficulty}:`, this.topScores);
+        console.log(`High scores for ${difficulty}:`, this.topScores);
       },
       error: (err) => {
         console.error('Error fetching high scores:', err);
-        this.topScores = []; // Clear scores on error
+        this.topScores = [];
       }
     });
   }
 
-  // Helper to format milliseconds into seconds.ms or minutes:seconds
   formatTime(ms: number | undefined): string {
     if (ms === undefined || ms === null) return '00:00';
     const totalSeconds = Math.floor(ms / 1000);

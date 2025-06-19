@@ -1,44 +1,34 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { GameBoard } from '../models/game';
-import { Difficulty } from '../models/difficulty'; // Import the new enum
-
+import { GameBoard } from '../models/game-board';
+import { GameCreationRequest } from '../models/game-creation-request';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameService {
-  private baseUrl = 'https://your-heroku-backend.herokuapp.com/api/game'; // update this later
-  private apiUrl = 'http://localhost:8080/api/game'; // Adjust this to your backend URL and base path
+  private apiUrl = 'http://localhost:8080/api/game'; // Your backend API base URL
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  createGame(rows: number, cols: number, mines: number): Observable<GameBoard> {
-    return this.http.post<GameBoard>(this.apiUrl, { rows, cols, mines });
+  createGame(request: GameCreationRequest): Observable<GameBoard> {
+    return this.http.post<GameBoard>(`${this.apiUrl}/create`, request);
   }
 
-  revealCell(id: string, row: number, col: number): Observable<GameBoard> {
-    return this.http.post<GameBoard>(`${this.apiUrl}/${id}/reveal`, { row, col });
+  getGame(gameId: string): Observable<GameBoard> {
+    return this.http.get<GameBoard>(`${this.apiUrl}/${gameId}`);
   }
 
-  flagCell(id: string, row: number, col: number): Observable<GameBoard> {
-    return this.http.post<GameBoard>(`${this.apiUrl}/${id}/flag`, { row, col });
+  revealCell(gameId: string, row: number, col: number): Observable<GameBoard> {
+    return this.http.post<GameBoard>(`${this.apiUrl}/${gameId}/reveal/${row}/${col}`, {});
   }
 
-  getGame(id: string): Observable<GameBoard> {
-    return this.http.get<GameBoard>(`${this.apiUrl}/${id}`);
-  }
-
-  // Modified startGame to accept Difficulty
-  startGame(difficulty: Difficulty): Observable<GameBoard> {
-    // Send the difficulty enum value in the request body
-    return this.http.post<GameBoard>(`${this.apiUrl}/start`, { difficulty });
+  flagCell(gameId: string, row: number, col: number): Observable<GameBoard> {
+    return this.http.post<GameBoard>(`${this.apiUrl}/${gameId}/flag/${row}/${col}`, {});
   }
 
   chordClick(gameId: string, row: number, col: number): Observable<GameBoard> {
-    return this.http.put<GameBoard>(`${this.apiUrl}/${gameId}/chord`, { row, col }); // <--- Corrected template literal
+    return this.http.post<GameBoard>(`${this.apiUrl}/${gameId}/chord/${row}/${col}`, {});
   }
-
-
 }

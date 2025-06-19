@@ -8,26 +8,15 @@ import { Difficulty } from '../models/difficulty';
   providedIn: 'root'
 })
 export class ScoreService {
-  private apiUrl = 'http://localhost:8080/api/scores'; // Matches your backend ScoreController @RequestMapping
+  private apiUrl = 'http://localhost:8080/api/game'; // Adjust if your score API is separate
 
   constructor(private http: HttpClient) { }
 
-  /**
-   * Sends a request to the backend to add a new score.
-   * @param gameId The ID of the completed game.
-   * @param playerName The name of the player.
-   * @returns An Observable of the added Score (if it made it to top 10) or a response indicating success.
-   */
-  addScore(gameId: string, playerName: string): Observable<Score | any> {
-    return this.http.post<Score>(`${this.apiUrl}/add`, { gameId, playerName });
+  addScore(gameId: string, playerName: string): Observable<Score> {
+    return this.http.post<Score>(`${this.apiUrl}/scores/add`, { gameId, playerName });
   }
 
-  /**
-   * Retrieves the top scores for a given difficulty.
-   * @param difficulty The difficulty level to fetch scores for.
-   * @returns An Observable of an array of Score objects.
-   */
   getTopScores(difficulty: Difficulty): Observable<Score[]> {
-    return this.http.get<Score[]>(`${this.apiUrl}/top/${difficulty}`);
+    return this.http.get<Score[]>(`${this.apiUrl}/scores/${difficulty}`);
   }
 }

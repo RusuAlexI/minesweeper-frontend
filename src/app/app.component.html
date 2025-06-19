@@ -1,1 +1,3 @@
-<app-board [game]="game"></app-board>
+<app-board [game]="game"
+           (cellClicked)="onBoardCellClick($event)"  (cellFlagged)="onBoardCellFlagged($event)"
+           (cellChordClicked)="onBoardCellChordClicked($event)"></app-board>

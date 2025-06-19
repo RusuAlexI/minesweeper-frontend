@@ -1,90 +1,153 @@
-/* app.component.css (or board.component.css depending on where the grid is rendered) */
-
-.row {
-  display: flex; /* Use flexbox for rows */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background-color: #f4f4f4;
+  color: #333;
 }
 
-.row button {
-  width: 30px;   /* Set a fixed width for each cell */
-  height: 30px;  /* Set a fixed height for each cell */
-  border: 1px solid #ccc; /* Add a border for visibility */
-  background-color: #eee; /* Light background for unrevealed */
-  font-size: 16px; /* Adjust font size for content */
-  font-weight: bold;
-  display: flex; /* Center content within the button */
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
+.minesweeper-container {
+  max-width: 900px;
+  margin: 20px auto;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
-/* Styles for revealed cells */
-.row button.revealed {
-  background-color: #ddd;
-  border: 1px solid #999;
-  cursor: default;
+h1 {
+  color: #333;
+  margin-bottom: 25px;
 }
 
-/* Optional: Style for bombs or numbers */
-.row button.mine {
-  background-color: #f00; /* Red for mines */
-  color: white;
+.game-setup {
+  margin-bottom: 30px;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fcfcfc;
 }
 
-.row button.number {
-  color: blue; /* Blue for numbers */
+.game-setup h2 {
+  margin-top: 0;
+  color: #555;
 }
 
-.difficulty-selection {
-  margin-bottom: 15px;
+.game-mode-selection label {
+  margin-right: 15px;
+  font-size: 16px;
 }
 
-.difficulty-selection button {
-  padding: 8px 15px;
-  margin-right: 10px;
-  cursor: pointer;
+.predefined-settings, .custom-settings {
+  margin-top: 15px;
   border: 1px solid #ccc;
-  background-color: #f0f0f0;
-  border-radius: 4px;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
 }
 
-.difficulty-selection button.active {
+.input-group {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-group label {
+  width: 80px; /* Align labels */
+  text-align: right;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.input-group input[type="number"] {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 100px;
+  font-size: 14px;
+}
+
+select {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
   background-color: #007bff;
   color: white;
-  border-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+button:hover {
+  background-color: #0056b3;
 }
 
 .game-info {
-  margin-top: 10px;
-  font-size: 1.1em;
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #e9ecef;
+  border-radius: 5px;
   font-weight: bold;
 }
 
+.game-info p {
+  margin: 5px 0;
+}
+
+/* Assuming app-board component handles its own grid rendering */
+app-board {
+  display: block; /* Ensures it takes up space correctly */
+  margin: 20px auto;
+  width: fit-content;
+}
+
+/* Style for the score input overlay */
 .name-input-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Ensure it's on top */
+  z-index: 1000;
 }
 
 .name-input-card {
-  background: white;
+  background-color: white;
   padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   text-align: center;
-  max-width: 400px;
-  width: 90%;
 }
 
 .name-input-card h3 {
   margin-top: 0;
-  color: #28a745; /* Green for win */
+  color: #333;
+}
+
+.name-input-card p {
+  font-size: 1.1em;
+  margin-bottom: 20px;
 }
 
 .name-input-card label {
@@ -94,137 +157,81 @@
 }
 
 .name-input-card input[type="text"] {
-  width: calc(100% - 20px);
   padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 80%;
+  max-width: 250px;
   margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1em;
+  font-size: 16px;
 }
 
 .name-input-card button {
-  padding: 10px 20px;
   margin: 0 10px;
+  padding: 10px 20px;
+  font-size: 16px;
   cursor: pointer;
-  border: none;
   border-radius: 5px;
-  font-weight: bold;
 }
 
 .name-input-card button:first-of-type {
-  background-color: #007bff;
+  background-color: #28a745; /* Save button color */
   color: white;
+  border: none;
+}
+
+.name-input-card button:first-of-type:hover {
+  background-color: #218838;
 }
 
 .name-input-card button:last-of-type {
-  background-color: #dc3545; /* Red for cancel */
+  background-color: #dc3545; /* Cancel button color */
   color: white;
+  border: none;
+}
+
+.name-input-card button:last-of-type:hover {
+  background-color: #c82333;
 }
 
 .high-scores-container {
-  margin-top: 30px;
+  margin-top: 40px;
   padding: 20px;
-  border: 1px solid #eee;
+  border: 1px solid #ccc;
   border-radius: 8px;
-  background-color: #f9f9f9;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  text-align: center;
+  background-color: #f0f0f0;
 }
 
 .high-scores-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
   color: #333;
-  margin-bottom: 15px;
 }
 
-.high-scores-container button {
-  padding: 8px 15px;
+.leaderboard-difficulty-select {
   margin-bottom: 15px;
-  cursor: pointer;
-  border: 1px solid #007bff;
-  background-color: #007bff;
-  color: white;
-  border-radius: 4px;
 }
 
 .high-scores-container ul {
-  list-style: none;
+  list-style-type: none;
   padding: 0;
+  margin-top: 15px;
 }
 
 .high-scores-container li {
-  background-color: #e9e9e9;
-  margin-bottom: 8px;
+  background-color: #e9ecef;
+  border: 1px solid #ddd;
+  margin-bottom: 5px;
   padding: 10px;
   border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 1.1em;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px; /* Space between rank, name, time */
-  flex-wrap: wrap; /* Allow wrapping on small screens */
 }
 
-/* Optional: improve game board sizing for different difficulties */
-.game-board-container {
-  display: inline-block; /* Helps with centering */
-  margin: 20px auto;
-  /* Add max-width and overflow-x for larger boards if they go off screen */
-  max-width: 100%;
-  overflow-x: auto;
-}
-
-.row {
-  display: flex;
-}
-
-button {
-  width: 30px; /* Adjust as needed */
-  height: 30px; /* Adjust as needed */
-  border: 1px solid #bbb;
-  background-color: #ccc;
-  cursor: pointer;
-  font-size: 1em;
-  font-weight: bold;
-  display: flex; /* For centering content inside button */
-  justify-content: center;
-  align-items: center;
-  padding: 0; /* Remove default padding */
-  box-sizing: border-box; /* Include padding and border in element's total width and height */
-  user-select: none; /* Prevent text selection on quick clicks */
-}
-
-button:hover {
-  background-color: #ddd;
-}
-
-button.revealed {
-  background-color: #eee;
-  cursor: default;
-}
-
-button.revealed:hover {
-  background-color: #eee;
-}
-
-button.revealed span {
-  color: blue; /* Default for numbers */
-}
-
-/* Specific colors for numbers */
-button.revealed span:nth-child(1) { color: blue; }    /* 1 */
-button.revealed span:nth-child(2) { color: green; }   /* 2 */
-button.revealed span:nth-child(3) { color: red; }     /* 3 */
-button.revealed span:nth-child(4) { color: navy; }    /* 4 */
-button.revealed span:nth-child(5) { color: brown; }   /* 5 */
-button.revealed span:nth-child(6) { color: teal; }    /* 6 */
-button.revealed span:nth-child(7) { color: black; }   /* 7 */
-button.revealed span:nth-child(8) { color: grey; }    /* 8 */
-
-
-button.flagged {
-  background-color: #ffcc00; /* Yellow for flag */
-}
-
-button.mine {
-  background-color: #ff0000; /* Red for mine */
+.high-scores-container p {
+  margin-top: 15px;
+  font-style: italic;
+  color: #666;
 }

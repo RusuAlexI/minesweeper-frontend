@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output, OnDestroy } from '@angular/core'; // Added OnDestroy
 import { CommonModule } from '@angular/common';
-import { GameBoard } from '../models/game'; // Adjust path as necessary
+import { GameBoard } from '../models/game-board'; // Adjust path as necessary
 
 @Component({
   selector: 'app-board',
@@ -44,7 +44,7 @@ export class BoardComponent implements OnDestroy { // Implement OnDestroy
     // Check if both buttons are now down for this cell
     if (this.activeLeftClicks[key] && this.activeRightClicks[key]) {
       // Trigger chord click if conditions are met
-      if (this.game && this.game.status === 'IN_PROGRESS' && this.game.board[row][col].isRevealed) {
+      if (this.game && this.game.status === 'IN_PROGRESS' && this.game.board[row][col].revealed) {
         console.log('BOARD_COMPONENT: Simultaneous click detected, triggering chord click for', row, col);
         this.cellChordClicked.emit({row, col});
         this.chordClickDetectedForCell[key] = true; // Mark that a chord click was handled
@@ -83,10 +83,21 @@ export class BoardComponent implements OnDestroy { // Implement OnDestroy
       return;
     }
 
-    if (!this.game || this.game.status !== 'IN_PROGRESS' || this.game.board[row][col].isRevealed || this.game.board[row][col].isFlagged) {
-      console.log('BOARD_COMPONENT: Click ignored due to game state or cell state.');
+    // --- MODIFIED CONDITION HERE ---
+    // Allow clicks if the game is NOT_STARTED or IN_PROGRESS
+    if (!this.game || (this.game.status !== 'NOT_STARTED' && this.game.status !== 'IN_PROGRESS')) {
+      console.log('BOARD_COMPONENT: Click ignored due to game state (not NOT_STARTED or IN_PROGRESS). Status:', this.game?.status);
       return;
     }
+
+    // Still ignore if cell is already revealed or flagged
+    const cell = this.game.board[row][col];
+    if (cell.revealed || cell.flagged) {
+      console.log('BOARD_COMPONENT: Click ignored due to cell state (revealed or flagged). Cell:', cell);
+      return;
+    }
+
+    // If we reach here, it's a valid click
     this.cellClicked.emit({row, col});
   }
 
@@ -110,7 +121,7 @@ export class BoardComponent implements OnDestroy { // Implement OnDestroy
     }
 
     // Only allow flagging on unrevealed cells
-    if (!this.game.board[row][col].isRevealed) {
+    if (!this.game.board[row][col].revealed) {
       console.log('BOARD_COMPONENT: Emitting flag/unflag for unrevealed cell', row, col);
       this.cellFlagged.emit({row, col});
     } else {

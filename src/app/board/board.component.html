@@ -1,14 +1,14 @@
 <div *ngIf="game && game.board" class="game-board-container">
   <div *ngFor="let row of game.board; let i = index" class="row">
     <button *ngFor="let cell of row; let j = index"
-            (click)="onCellClick(i, j)"         (contextmenu)="onCellRightClick($event, i, j)" (mousedown)="onMouseDown($event, i, j)"   (mouseup)="onMouseUp($event, i, j)"     [class.revealed]="cell.isRevealed"
-            [class.flagged]="cell.isFlagged"
-            [class.mine]="cell.isRevealed && cell.isMine">
-      <ng-container *ngIf="cell.isRevealed">
-        <span *ngIf="cell.isMine">💣</span>
-        <span *ngIf="!cell.isMine && cell.adjacentMines > 0">{{ cell.adjacentMines }}</span>
+            (click)="onCellClick(i, j)"         (contextmenu)="onCellRightClick($event, i, j)" (mousedown)="onMouseDown($event, i, j)"   (mouseup)="onMouseUp($event, i, j)"     [class.revealed]="cell.revealed"
+            [class.flagged]="cell.flagged"
+            [class.mine]="cell.revealed && cell.mine">
+      <ng-container *ngIf="cell.revealed">
+        <span *ngIf="cell.mine">💣</span>
+        <span *ngIf="!cell.mine && cell.adjacentMines > 0">{{ cell.adjacentMines }}</span>
       </ng-container>
-      <ng-container *ngIf="!cell.isRevealed && cell.isFlagged">
+      <ng-container *ngIf="!cell.revealed && cell.flagged">
         🚩
       </ng-container>
     </button>

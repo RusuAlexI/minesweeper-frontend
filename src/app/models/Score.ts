@@ -1,9 +1,11 @@
-import { Difficulty } from './difficulty'; // Import the Difficulty enum
+// minesweeper-game-angular/src/app/models/score.ts
+import { Difficulty } from "./difficulty";
 
 export interface Score {
   id: string;
+  gameId: string;
   playerName: string;
-  timeTaken: number; // in milliseconds
+  timeTaken: number; // milliseconds
   difficulty: Difficulty;
-  timestamp: number; // When the score was recorded (epoch milliseconds)
+  timestamp: number; // epoch milliseconds
 }
