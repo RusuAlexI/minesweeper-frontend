@@ -3,14 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Score } from '../models/Score';
 import { Difficulty } from '../models/difficulty';
-import { environment } from '../../environments/environment';
-
+import { environment } from '../../environments/environment'; // ADD THIS LINE
 
 @Injectable({
   providedIn: 'root'
 })
 export class ScoreService {
-  private apiUrl = environment.apiUrl;
+  private apiUrl = environment.apiUrl; // CHANGE THIS LINE to use environment.apiUrl
 
   constructor(private http: HttpClient) { }
 
