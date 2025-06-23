@@ -3,12 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Score } from '../models/score';
 import { Difficulty } from '../models/difficulty';
+import { environment } from '../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class ScoreService {
-  private apiUrl = 'http://localhost:8080/api/game'; // Adjust if your score API is separate
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 

@@ -3,12 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { GameBoard } from '../models/game-board';
 import { GameCreationRequest } from '../models/game-creation-request';
+import { environment } from '../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameService {
-  private apiUrl = 'http://localhost:8080/api/game'; // Your backend API base URL
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 
