@@ -7,7 +7,7 @@ import { GameService } from './services/game.service';
 import { Difficulty } from './models/difficulty';
 import { GameCreationRequest } from './models/game-creation-request'; // Import new request model
 import { ScoreService } from './services/score.service';
-import { Score } from './models/score';
+import { Score } from './models/Score';
 import { FormsModule } from '@angular/forms';
 
 @Component({
