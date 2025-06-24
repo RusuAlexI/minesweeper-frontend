@@ -1,4 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080/api/game' // Your local backend API base URL
+// Attempt to read from an environment variable first, fall back to localhost if not set
+  apiUrl: process.env['NG_APP_API_URL'] || 'http://localhost:8080/api/game'
 };
